@@ -2,6 +2,7 @@
   <div class="container">
     <router-view></router-view>
   </div>
+  <title>Queuely</title> <!-- 保持前台不变 -->
 </template>
 
 <script setup>

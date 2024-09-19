@@ -20,3 +20,10 @@ const app = createApp(App)
 app.config.globalProperties.$db = db
 app.use(router)
 app.mount('#app')
+
+// 保持前台不变
+if (window.location.pathname === '/admin') {
+  document.title = "Queuely Admin";
+} else {
+  document.title = "Queuely";
+}

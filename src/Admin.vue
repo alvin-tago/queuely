@@ -1,6 +1,6 @@
 <template>
-  <div class="container">
-    <h1>店家控制面板</h1>
+  <div class="admin-container">
+    <h1>Queuely Admin</h1>
     <div class="number-display">
       <h2>目前處理到的號碼</h2>
       <div class="current-number">{{ currentProcessingNumber }}</div>
@@ -58,7 +58,7 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.container {
+.admin-container {
   text-align: center;
   padding: 20px;
 }
