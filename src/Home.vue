@@ -22,7 +22,9 @@
 import { ref, onMounted } from 'vue';
 import { collection, doc, runTransaction, query, orderBy, limit, getDoc, getDocs } from 'firebase/firestore';
 import { db } from './firebase';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const currentNumber = ref(0);
 const currentProcessingNumber = ref(0);
 const isDrawing = ref(false);
@@ -48,30 +50,36 @@ async function drawNumber() {
   isDrawing.value = true;
   
   try {
+    let newNumber;
     await runTransaction(db, async (transaction) => {
       const counterRef = doc(db, "counters", "numberCounter");
       const counterDoc = await transaction.get(counterRef);
       
       if (!counterDoc.exists()) {
-        transaction.set(counterRef, { value: 1 });
-        currentNumber.value = 1;
+        newNumber = 1;
+        transaction.set(counterRef, { value: newNumber });
       } else {
-        const newValue = counterDoc.data().value + 1;
-        transaction.update(counterRef, { value: newValue });
-        currentNumber.value = newValue;
+        newNumber = counterDoc.data().value + 1;
+        transaction.update(counterRef, { value: newNumber });
       }
       
-      // 添加新的号码记录
-      const newNumberRef = doc(collection(db, "numbers"));
+      // 使用新號碼作為文檔 ID
+      const newNumberRef = doc(db, "numbers", newNumber.toString());
       transaction.set(newNumberRef, {
-        value: currentNumber.value,
+        value: newNumber,
         timestamp: new Date()
       });
     });
     
-    console.log("新号码已抽取：", currentNumber.value);
+    currentNumber.value = newNumber;
+    console.log("新號碼已抽取：", newNumber);
+    
+    router.push({
+      path: '/number-display',
+      query: { drawnNumber: newNumber }
+    });
   } catch (e) {
-    console.error("抽取号码时出错: ", e);
+    console.error("抽取號碼時出錯: ", e);
   } finally {
     isDrawing.value = false;
   }
